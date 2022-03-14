@@ -1,8 +1,6 @@
 clear; clc; close all;
 
-%% Chapter 3 - Spectral Analysis
-
-%% 3.1 Computation of the density spectrum 
+%% Chapter 8 - Analysis of the hydrodynamics
 
 %% Load the data 
 
@@ -28,6 +26,8 @@ conc3 = condition3.data(:,3);
 h1 = condition1.h;
 h2 = condition2.h;
 h3 = condition3.h;
+
+%% 8.1.1. Wave characteristics 
 
 %% Compute the variance density spectrum 
 
@@ -64,7 +64,7 @@ fmax=1/(2*0.5);
         [S f edf conf95Interval] = VarianceDensitySpectrum(x(:,i),0.5^3*length(x(:,i)),Fs);
         
         m0(i) = spectral_moment(f,S,fmin,fmax);
-        H_m01 = 4*sqrt(m0);   %So now H_m0 = 4*sqrt(m_0)
+        H_m01 = 4*sqrt(m0);   
 
     end
 
@@ -131,5 +131,57 @@ for i=1:3
         xlabel('time [s]','FontWeight','bold');
     end 
     ylabel('\eta [m]','FontWeight','bold');
+    xlim([0 2048]);
+end
+
+%% 8.1.2. Separation of the timeseries (high, low frequency and mean component)
+
+%% mean component of the velocity
+u=[u1 u2 u3];
+
+for i=1:3
+    u_mean(i)=mean(u(i));
+end 
+
+display(u_mean);
+%% high and low frequency components for each condition
+
+%high frequency component
+flow=0.05;
+fhigh=1/(2*0.5);
+for i=1:3
+    u_hf (:,i)= fft_filter(u(:,i), Fs,flow , fhigh);
+end 
+
+%low frequency component
+flow=0.005;
+fhigh=0.05;
+for i=1:3
+    u_lf (:,i)= fft_filter(u(:,i), Fs,flow , fhigh);
+end 
+
+% checking the computations
+sum=u_lf(:,1)+u_hf(:,1)+u_mean(1);
+diff=u1-sum;
+mean_diff=mean(diff);
+display(mean_diff);
+%!!!!!! idk if thi part is correct, because the difference seems to be quite high!!!!!!!
+%% plot now uhf for each of the three cases
+
+figure;
+for i=1:3
+    subplot(3,1,i);
+    plot(time,u_hf(:,i));
+    hold on;
+    plot(time,u_lf(:,i));
+    grid on;
+    if i==1 
+        title('Cross shore velocity','FontWeight','bold');
+    end 
+    if i==3
+        xlabel('time [s]','FontWeight','bold');
+    end
+    legend(["u_h_f" "u_l_f"]);
+    ylabel('cross shore velocity [m/s]','FontWeight','bold');
     xlim([0 2048]);
 end
