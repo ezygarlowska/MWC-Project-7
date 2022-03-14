@@ -185,3 +185,22 @@ for i=1:3
     ylabel('cross shore velocity [m/s]','FontWeight','bold');
     xlim([0 2048]);
 end
+
+%% 8.2. Sediment transport
+
+%% 8.2.1. Preliminary analysis
+
+%% 8.2.2. Sediment transport calculations
+
+%% Calculate the total sediment transport q as uc
+
+c= [conc1 conc2 conc3];
+for i=1:3
+    c_mean(i)=mean(c(i));
+end 
+
+display(c_mean);
+
+for i=1:3
+    q(i)=mean(c(i).*u(i));
+end 
