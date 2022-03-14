@@ -101,10 +101,35 @@ display(ratio);
 
 %Compute the skewness and asymmetry of the sea-swell waves for each case.
 
+% filtering the free-surface time-series to remove the low- frequency variations 
 flow=0.05;
 fhigh=1/(2*0.5);
 for i=1:3
     dataFilt (:,i)= fft_filter(x(:,i), Fs,flow , fhigh);
 end 
 
+for i=1:3
+    [Sk(i),As(i)] = Skewness_asymmetry(dataFilt(:,i));
+end 
 
+display(Sk);
+display(As);
+
+%% free surface elevation (detrended)
+
+time=0:0.5:(length(eta1)-1)/2;
+
+figure;
+for i=1:3
+    subplot(3,1,i);
+    plot(time,dataFilt(:,i));
+    grid on;
+    if i==1 
+        title('Free-surface elevation time-series');
+    end 
+    if i==3
+        xlabel('time [s]','FontWeight','bold');
+    end 
+    ylabel('\eta [m]','FontWeight','bold');
+    xlim([0 2048]);
+end
