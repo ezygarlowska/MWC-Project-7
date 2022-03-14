@@ -104,5 +104,3 @@ fhigh=1/(2*0.5);
 for i=1:3
     dataFilt (:,i)= fft_filter(x(:,i), Fs,flow , fhigh);
 end 
-
-
