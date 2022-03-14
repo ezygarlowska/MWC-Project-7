@@ -215,7 +215,7 @@ end
 condition=["condition 1" "condition 2" 'condition 3'];
 
 for i=1:3
-    figure(i);
+    figure;
     
     %velocity 
     subplot(2,1,1);
