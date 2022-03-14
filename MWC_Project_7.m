@@ -95,6 +95,8 @@ end
 display(rwh);
 display(ratio);
 
+%we should maybe make a nice plot with all the characteristics or smth
+
 %% skewness and asymmetry
 
 %Compute the skewness and asymmetry of the sea-swell waves for each case.
