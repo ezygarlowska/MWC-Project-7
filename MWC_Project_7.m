@@ -22,7 +22,7 @@ u3 = condition3.data(:,2);
 conc1 = condition1.data(:,3);
 conc2 = condition2.data(:,3);
 conc3 = condition3.data(:,3);
-%water depth
+% mean water depth
 h1 = condition1.h;
 h2 = condition2.h;
 h3 = condition3.h;
@@ -190,17 +190,75 @@ end
 
 %% 8.2.1. Preliminary analysis
 
+c= [conc1 conc2 conc3];
+
+% u-u_mean, c-c_mean
+for i=1:3
+    u_diff(:,i)=u(:,1)-u_mean(i);
+    c_diff(:,i)=c(:,1)-mean(c(:,i));
+end 
+
+%low frequency component
+flow=0.005;
+fhigh=0.05;
+for i=1:3
+    c_lf (:,i)= fft_filter(c(:,i), Fs,flow , fhigh);
+end 
+
+%high frequency component
+flow=0.05;
+fhigh=1/(2*0.5);
+for i=1:3
+    c_hf (:,i)= fft_filter(c(:,i), Fs,flow , fhigh);
+end 
+
+condition=["condition 1" "condition 2" 'condition 3'];
+
+for i=1:3
+    figure(i);
+    
+    %velocity 
+    subplot(2,1,1);
+    plot(time,u_diff(:,i));
+    hold on;
+    plot(time,u_lf(:,i));
+    grid on;
+    title('velocity time-series- ',condition(i),'FontWeight','bold');
+    xlabel('time [s]','FontWeight','bold');
+    legend(["u" "u_l_f"]);
+    ylabel('cross shore velocity [m/s]','FontWeight','bold');
+    xlim([0 2048]);
+    
+    %concentration 
+    subplot(2,1,2);
+    plot(time,c_diff(:,i));
+    hold on;
+    plot(time,c_lf(:,i));
+    plot(time,c_hf(:,i));
+    grid on;
+    title('concentration time-series','FontWeight','bold');
+    xlabel('time [s]','FontWeight','bold');
+    legend(["c" "c_h_f" "c_l_f"]);
+    ylabel('concentration [m/s]','FontWeight','bold'); % add unit
+    xlim([0 2048]);
+end
+
 %% 8.2.2. Sediment transport calculations
 
-%% Calculate the total sediment transport q as uc
-
-c= [conc1 conc2 conc3];
-for i=1:3
-    c_mean(i)=mean(c(i));
-end 
-
-display(c_mean);
+%% Calculate the total sediment transport q; Calculate the three parts of the sediment transport for each condition
 
 for i=1:3
-    q(i)=mean(c(i).*u(i));
+    q(i)=mean(c(i).*u(i)); %total sediment transport
+    uc_hf(i)=mean(u_hf(:,i).*c_hf(:,i)); %high frequency component
+    uc_lf(i)=mean(u_lf(:,i).*c_lf(:,i)); %low frequency component
+    uc(i)=mean(u(i)).*mean(c(i)); %product of means
 end 
+
+% checking whether the result is valid (for the first condition)
+sum= uc(1)+uc_hf(1)+uc_lf(1);
+diff=q(1)-sum;
+display(diff);
+
+%we should ask the TA what difference is okay to have
+
+
