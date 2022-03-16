@@ -4,7 +4,7 @@ clear; clc; close all;
 
 %% Load the data 
 
-%Loading the files LowTide.txt, midTide.txt and highTide.txt
+%Loading the files for each condition
 ucData = load('ucData.mat');
 condition1=ucData.condition1;
 condition2=ucData.condition2;
@@ -22,7 +22,7 @@ u3 = condition3.data(:,2);
 conc1 = condition1.data(:,3);
 conc2 = condition2.data(:,3);
 conc3 = condition3.data(:,3);
-%water depth
+% mean water depth
 h1 = condition1.h;
 h2 = condition2.h;
 h3 = condition3.h;
@@ -35,6 +35,7 @@ h3 = condition3.h;
 % Number of blocks is equal 15, so that we have 30 degrees of freedom
 x= [eta1 eta2 eta3];
 Fs=condition1.Fs; %it is the same for each of the conditions
+
 figure;
 for i=1:3
     subplot(3,1,i);
@@ -45,10 +46,13 @@ for i=1:3
     if i==1 
         title('Variance density spectra of the free-surface elevation');
     end 
+    if i==3 
+        %xlabel('Frequency [Hz]','FontWeight','bold');
+    end 
     %ylabel('E [m^2/Hz]','FontWeight','bold');
     legend('Spectrum (N=15)');
 end
-%xlabel('Frequency [Hz]','FontWeight','bold');
+
 
 %add labels and confidence intervals, remember that we did something wrong
 %in second practical, so go to the feedback and fix conf95 thingy
@@ -59,7 +63,7 @@ end
 
 %sea-swell 0.05 Hz < f < fN
 fmin=0.05;
-fmax=1/(2*0.5);
+fmax=1/(2*0.5); %Nyquist frequency
     for i=1:3
         [S f edf conf95Interval] = VarianceDensitySpectrum(x(:,i),0.5^3*length(x(:,i)),Fs);
         
@@ -103,7 +107,7 @@ display(ratio);
 
 % filtering the free-surface time-series to remove the low- frequency variations 
 flow=0.05;
-fhigh=1/(2*0.5);
+fhigh=1/(2*0.5); 
 for i=1:3
     dataFilt (:,i)= fft_filter(x(:,i), Fs,flow , fhigh);
 end 
@@ -161,11 +165,9 @@ for i=1:3
 end 
 
 % checking the computations
-sum=u_lf(:,1)+u_hf(:,1)+u_mean(1);
-diff=u1-sum;
-mean_diff=mean(diff);
-display(mean_diff);
-%!!!!!! idk if thi part is correct, because the difference seems to be quite high!!!!!!!
+sum1=u_lf(:,1)+u_hf(:,1)+u_mean(1);
+scatter(u1, sum1);
+ylabel('u_l_f+u_h_f+u_m_','FontWeight','bold');
 %% plot now uhf for each of the three cases
 
 figure;
@@ -215,7 +217,7 @@ end
 condition=["condition 1" "condition 2" 'condition 3'];
 
 for i=1:3
-    figure(i);
+    figure;
     
     %velocity 
     subplot(2,1,1);
@@ -248,7 +250,7 @@ end
 %% Calculate the total sediment transport q; Calculate the three parts of the sediment transport for each condition
 
 for i=1:3
-    q(i)=mean(c(i).*u(i)); %total sediment transport
+    q(i)=mean(c(:,i).*u(:,i)); %total sediment transport
     uc_hf(i)=mean(u_hf(:,i).*c_hf(:,i)); %high frequency component
     uc_lf(i)=mean(u_lf(:,i).*c_lf(:,i)); %low frequency component
     uc(i)=mean(u(i)).*mean(c(i)); %product of means
@@ -259,6 +261,6 @@ sum= uc(1)+uc_hf(1)+uc_lf(1);
 diff=q(1)-sum;
 display(diff);
 
-%we should ask the TA what difference is okay to have
+
 
 
