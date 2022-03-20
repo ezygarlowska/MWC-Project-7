@@ -33,7 +33,7 @@ h3 = condition3.h;
 
 % Computing the variance density spectra of the free-surface elevation for the three conditions.
 % Number of blocks is equal 15, so that we have 38 degrees of freedom (from
-% edf of the "VarianceDensitySpectrum" function. 
+% edf of the "VarianceDensitySpectrum" function). 
 x= [eta1 eta2 eta3];
 Fs=condition1.Fs; %it is the same for each of the conditions
 
@@ -48,24 +48,28 @@ for i=1:3
     plot(f,curve1,'--b');
     plot(f,curve2,'--b');                 
     grid on;
-    %ylim([0 9]);
+    ylabel('E [m^2/Hz]','FontWeight','bold');
+    xlim([0 0.5]);
     if i==1 
-        title('Variance density spectra of the free-surface elevation');
+        title('Variance density spectra of the free-surface elevation for three conditions');
     end 
     if i==3 
         %xlabel('Frequency [Hz]','FontWeight','bold');
     end 
     %ylabel('E [m^2/Hz]','FontWeight','bold');
-    legend('Spectrum (N=15)','Confidence Interval (5-95%');
+    legend('Spectrum (N=15)','Confidence Interval (5-95%)');
 end
-
+xlabel('Frequency [Hz]','FontWeight','bold');
+savefig('Matlab7_i');
 
 %add labels and confidence intervals, remember that we did something wrong
 %in second practical, so go to the feedback and fix conf95 thingy
 
 %% spectral wave height
 
-%For each condition, compute the spectral wave height Hm0 for the sea-swell (0.05 Hz < f < fN, with fN the Nyquist frequency) and infragravity wave (0.005 Hz < f < 0.05 Hz) frequencies.
+%For each condition, compute the spectral wave height Hm0 for the sea-swell 
+%(0.05 Hz < f < fN, with fN the Nyquist frequency) and infragravity wave 
+%(0.005 Hz < f < 0.05 Hz) frequencies.
 
 %sea-swell 0.05 Hz < f < fN
 fmin=0.05;
@@ -139,8 +143,9 @@ for i=1:3
         xlabel('time [s]','FontWeight','bold');
     end 
     ylabel('\eta [m]','FontWeight','bold');
-    xlim([0 2048]);
+    xlim([0 50]);
 end
+savefig('Matlab7_ii');
 
 %% 8.1.2. Separation of the timeseries (high, low frequency and mean component)
 
@@ -175,6 +180,7 @@ scatter(u1, sum1);
 title('Correlation between computed and observed values','FontWeight','bold');
 ylabel('u_l_f+u_h_f+u_m_e_a_n [m/s]','FontWeight','bold');
 xlabel('non-filtered velocity u [m/s]','FontWeight','bold');
+savefig('Matlab7_iii');
 %% plot now uhf for each of the three cases
 
 figure;
@@ -194,7 +200,7 @@ for i=1:3
     ylabel('cross shore velocity [m/s]','FontWeight','bold');
     xlim([0 2048]);
 end
-
+savefig('Matlab7_iv');
 %% 8.2. Sediment transport
 
 %% 8.2.1. Preliminary analysis
